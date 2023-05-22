@@ -1,16 +1,38 @@
 # go_bang
 
-A new Flutter project.
+五子棋
 
-## Getting Started
+## flutter inject config
 
-This project is a starting point for a Flutter application.
+config.json
 
-A few resources to get you started if this is your first Flutter project:
+```json
+{
+  "base_url": "https://www.baidu.com",
+  "log_prex": "yk"
+}
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
+flutter 注入
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```shell
+flutter run --dart-define-from-file=config.json
+```
+
+flutter 获取
+
+```dart
+String.fromEnvironment("base_url");
+```
+
+---
+gradle 注入
+
+```gradle
+def dartEnvVar = [
+  base_url:project.hasProperty("base_url")?base_url:"error url"
+]
+
+print("=================${dartEnvVar}==================")
+```

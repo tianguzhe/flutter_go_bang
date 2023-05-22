@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  HomeController();
+  final double canvasSize;
+  late double oneSize;
 
-  // _initData() {
-  //   update(["home"]);
-  // }
+  HomeController(this.canvasSize);
+
+  _initData() {
+    oneSize = canvasSize / 15;
+    debugPrint("onesize $oneSize");
+  }
 
   // void onTap() {}
 
@@ -15,45 +19,40 @@ class HomeController extends GetxController {
   // //   super.onInit();
   // // }
 
-  // @override
-  // void onReady() {
-  //   super.onReady();
-  //   _initData();
-  // }
+  @override
+  void onReady() {
+    super.onReady();
+    _initData();
+  }
 
   // // @override
   // // void onClose() {
   // //   super.onClose();
   // // }
 
-  var qizi = <QiziModel>[
-    // QiziModel(140, 140, "black"),
-    // QiziModel(140, 160, "white"),
-  ];
+  var qizi = <QiziModel>[];
 
   bool win = false;
 
   String winDetail = "";
 
   void addRandom(Offset offset) {
-    // print(offset.dx % 20);
-    // print(offset.dy % 20);
     double calcDx = 0;
     double calcDy = 0;
     String role = qizi.length % 2 == 0 ? "black" : "white";
 
-    if (offset.dx % 20 >= 10) {
-      calcDx = offset.dx - (offset.dx % 20) + 20;
-    } else if (offset.dx % 20 < 10) {
-      calcDx = offset.dx - (offset.dx % 20);
+    if (offset.dx % oneSize >= oneSize / 2) {
+      calcDx = offset.dx - (offset.dx % oneSize) + oneSize;
+    } else if (offset.dx % oneSize < oneSize / 2) {
+      calcDx = offset.dx - (offset.dx % oneSize);
     } else {
       return;
     }
 
-    if (offset.dy % 20 >= 10) {
-      calcDy = offset.dy - (offset.dy % 20) + 20;
-    } else if (offset.dy % 20 < 10) {
-      calcDy = offset.dy - (offset.dy % 20);
+    if (offset.dy % oneSize >= oneSize / 2) {
+      calcDy = offset.dy - (offset.dy % oneSize) + oneSize;
+    } else if (offset.dy % oneSize < oneSize / 2) {
+      calcDy = offset.dy - (offset.dy % oneSize);
     } else {
       return;
     }
@@ -85,7 +84,7 @@ class HomeController extends GetxController {
 
   bool _calcWin(double calcDx, double calcDy, String role) {
     for (var i = 1; i < 5; i++) {
-      bool topLeft = _hasRole(calcDx - 20 * i, calcDy - 20 * i, role);
+      bool topLeft = _hasRole(calcDx - oneSize * i, calcDy - oneSize * i, role);
       if (!topLeft) {
         break;
       }
@@ -95,7 +94,7 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool top = _hasRole(calcDx, calcDy - 20 * i, role);
+      bool top = _hasRole(calcDx, calcDy - oneSize * i, role);
       if (!top) {
         break;
       }
@@ -105,7 +104,8 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool topRight = _hasRole(calcDx + 20 * i, calcDy - 20 * i, role);
+      bool topRight =
+          _hasRole(calcDx + oneSize * i, calcDy - oneSize * i, role);
       if (!topRight) {
         break;
       }
@@ -115,7 +115,7 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool left = _hasRole(calcDx - 20 * i, calcDy, role);
+      bool left = _hasRole(calcDx - oneSize * i, calcDy, role);
       if (!left) {
         break;
       }
@@ -125,7 +125,7 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool right = _hasRole(calcDx + 20 * i, calcDy, role);
+      bool right = _hasRole(calcDx + oneSize * i, calcDy, role);
       if (!right) {
         break;
       }
@@ -135,7 +135,8 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool bottomLeft = _hasRole(calcDx - 20 * i, calcDy + 20 * i, role);
+      bool bottomLeft =
+          _hasRole(calcDx - oneSize * i, calcDy + oneSize * i, role);
       if (!bottomLeft) {
         break;
       }
@@ -145,7 +146,7 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool bottom = _hasRole(calcDx, calcDy + 20 * i, role);
+      bool bottom = _hasRole(calcDx, calcDy + oneSize * i, role);
       if (!bottom) {
         break;
       }
@@ -155,7 +156,8 @@ class HomeController extends GetxController {
     }
 
     for (var i = 1; i < 5; i++) {
-      bool bottomRight = _hasRole(calcDx + 20 * i, calcDy + 20 * i, role);
+      bool bottomRight =
+          _hasRole(calcDx + oneSize * i, calcDy + oneSize * i, role);
       if (!bottomRight) {
         break;
       }

@@ -6,6 +6,10 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def dartEnvVar = [
+    base_url:project.hasProperty("base_url")?base_url:"error url"
+]
+
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
@@ -24,6 +28,8 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+print("=================${dartEnvVar}==================")
 
 android {
     namespace "com.example.go_bang"

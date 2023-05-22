@@ -8,8 +8,6 @@ import 'index.dart';
 class HomePage extends GetView<HomeController> {
   const HomePage({Key? key}) : super(key: key);
 
-  final double canvasSize = 300;
-
   Future<bool?> showDeleteDialog(context) {
     return showDialog(
       context: context,
@@ -27,7 +25,10 @@ class HomePage extends GetView<HomeController> {
                 Navigator.of(context).pop(true);
                 controller.nextGame();
               },
-              child: const Text("再来一局", style: TextStyle(color: Colors.red)),
+              child: const Text(
+                "再来一局",
+                style: TextStyle(color: Colors.red),
+              ),
             ),
           ],
         );
@@ -46,7 +47,7 @@ class HomePage extends GetView<HomeController> {
         children: [
           RepaintBoundary(
             child: CustomPaint(
-              size: Size(canvasSize, canvasSize),
+              size: Size(controller.canvasSize, controller.canvasSize),
               painter: MyQiPanPainter(),
             ),
           ),
@@ -59,8 +60,8 @@ class HomePage extends GetView<HomeController> {
                 },
                 child: CustomPaint(
                   size: Size(
-                    canvasSize,
-                    canvasSize,
+                    controller.canvasSize,
+                    controller.canvasSize,
                   ),
                   painter: MyQiZiPainter(),
                 ),
@@ -75,7 +76,9 @@ class HomePage extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<HomeController>(
-      init: HomeController(),
+      init: HomeController(min(MediaQuery.of(context).size.height,
+              MediaQuery.of(context).size.width) -
+          20),
       id: "home",
       builder: (_) {
         return Scaffold(
@@ -93,7 +96,7 @@ class MyQiPanPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var rect = Offset.zero & size;
-    debugPrint("paint: ${rect}");
+    debugPrint("paint: $rect");
 
     drawChessboard(canvas, rect);
   }

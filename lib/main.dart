@@ -10,6 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const baseUrl = String.fromEnvironment("base_url");
+    debugPrint(baseUrl);
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
