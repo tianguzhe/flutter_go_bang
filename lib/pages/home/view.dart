@@ -1,20 +1,23 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_bang/common/models/go_band_model.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'index.dart';
+class HomePage extends ConsumerWidget {
+  const HomePage({super.key});
 
-class HomePage extends GetView<HomeController> {
-  const HomePage({Key? key}) : super(key: key);
+  final double canvasSize = 300;
 
-  Future<bool?> showDeleteDialog(context) {
+  Future<bool?> showDeleteDialog(context, WidgetRef ref) {
+    final winInfo = ref.watch(winInfoProvider);
+
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text("提示"),
-          content: Text(controller.winDetail),
+          content: Text(winInfo),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -23,7 +26,7 @@ class HomePage extends GetView<HomeController> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(true);
-                controller.nextGame();
+                ref.read(gobandViewModelProvider.notifier).nextGame();
               },
               child: const Text(
                 "再来一局",
@@ -32,62 +35,53 @@ class HomePage extends GetView<HomeController> {
             ),
           ],
         );
-
-        // return Center(
-        //   child: Container(height: 200, width: 200, color: Colors.red),
-        // );
       },
-    );
-  }
-
-  // 主视图
-  Widget _buildView() {
-    return Center(
-      child: Stack(
-        children: [
-          RepaintBoundary(
-            child: CustomPaint(
-              size: Size(controller.canvasSize, controller.canvasSize),
-              painter: MyQiPanPainter(),
-            ),
-          ),
-          Positioned(
-            child: Builder(builder: (context) {
-              return GestureDetector(
-                onPanDown: (e) {
-                  if (!controller.win) controller.addRandom(e.localPosition);
-                  if (controller.win) showDeleteDialog(context);
-                },
-                child: CustomPaint(
-                  size: Size(
-                    controller.canvasSize,
-                    controller.canvasSize,
-                  ),
-                  painter: MyQiZiPainter(),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
-    return GetBuilder<HomeController>(
-      init: HomeController(min(MediaQuery.of(context).size.height,
-              MediaQuery.of(context).size.width) -
-          20),
-      id: "home",
-      builder: (_) {
-        return Scaffold(
-          appBar: AppBar(title: const Text("home")),
-          body: SafeArea(
-            child: _buildView(),
-          ),
-        );
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isWin = ref.watch(isWinProvider);
+    final list = ref.watch(gobandViewModelProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isWin) {
+        showDeleteDialog(context, ref);
+      }
+    });
+
+    return Scaffold(
+      body: Center(
+        child: Stack(
+          children: [
+            RepaintBoundary(
+              child: CustomPaint(
+                size: Size(canvasSize, canvasSize),
+                painter: MyQiPanPainter(),
+              ),
+            ),
+            Positioned(
+              child: Builder(builder: (context) {
+                return GestureDetector(
+                  onPanDown: (e) {
+                    if (!isWin) {
+                      ref
+                          .read(gobandViewModelProvider.notifier)
+                          .addNextSetp(e.localPosition);
+                    } else {
+                      showDeleteDialog(context, ref);
+                    }
+                  },
+                  child: CustomPaint(
+                    size: Size(canvasSize, canvasSize),
+                    painter: MyQiZiPainter(list),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -131,11 +125,14 @@ class MyQiPanPainter extends CustomPainter {
 }
 
 class MyQiZiPainter extends CustomPainter {
+  final List<GoBand> list;
+  MyQiZiPainter(this.list);
+
   @override
   void paint(Canvas canvas, Size size) {
     var rect = Offset.zero & size;
 
-    drawPieces(canvas, rect);
+    drawPieces(canvas, rect, list);
   }
 
   @override
@@ -143,49 +140,26 @@ class MyQiZiPainter extends CustomPainter {
     return true;
   }
 
-  void drawPieces(Canvas canvas, Rect rect) {
+  void drawPieces(Canvas canvas, Rect rect, List<GoBand> list) {
     double eWidth = rect.width / 15;
     double eHeight = rect.height / 15;
 
-    var controller = Get.find<HomeController>();
+    var paint = Paint()..style = PaintingStyle.fill;
 
-    var blackPaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.black;
-
-    var whitePaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Colors.white;
-
-    // canvas.drawCircle(
-    //     Offset(rect.center.dx - eWidth / 2, rect.center.dy - eHeight / 2),
-    //     min(eWidth / 2, eHeight / 2) - 2,
-    //     paint);
-
-    // debugPrint(
-    //     "dx  ${rect.center.dx - eWidth / 2}, dy ${rect.center.dy - eHeight / 2} ");
-
-    // paint.color = Colors.white;
-
-    // canvas.drawCircle(
-    //     Offset(rect.center.dx + eWidth / 2, rect.center.dy - eHeight / 2),
-    //     min(eWidth / 2, eHeight / 2) - 2,
-    //     paint);
-
-    for (var i = 0; i < controller.qizi.length; i++) {
-      var qizi = controller.qizi[i];
+    for (var i = 0; i < list.length; i++) {
+      var qizi = list[i];
 
       if (qizi.role == "black") {
         canvas.drawCircle(
           Offset(qizi.dx, qizi.dy),
           min(eWidth / 2, eHeight / 2) - 2,
-          blackPaint,
+          paint..color = Colors.black,
         );
       } else {
         canvas.drawCircle(
           Offset(qizi.dx, qizi.dy),
           min(eWidth / 2, eHeight / 2) - 2,
-          whitePaint,
+          paint..color = Colors.white,
         );
       }
     }
