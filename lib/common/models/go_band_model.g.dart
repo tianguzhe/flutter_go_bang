@@ -22,6 +22,20 @@ Map<String, dynamic> _$$_GoBandToJson(_$_GoBand instance) => <String, dynamic>{
 // RiverpodGenerator
 // **************************************************************************
 
+String _$oneSizeHash() => r'a2971541ac12debc4040e6384e36220f30a76e6e';
+
+/// See also [oneSize].
+@ProviderFor(oneSize)
+final oneSizeProvider = AutoDisposeProvider<double>.internal(
+  oneSize,
+  name: r'oneSizeProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$oneSizeHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef OneSizeRef = AutoDisposeProviderRef<double>;
 String _$winInfoHash() => r'3c8a162e53790f00e405648ae7c37a1cccd142ce';
 
 /// See also [winInfo].
@@ -50,7 +64,7 @@ final isWinProvider = AutoDisposeProvider<bool>.internal(
 );
 
 typedef IsWinRef = AutoDisposeProviderRef<bool>;
-String _$gobandViewModelHash() => r'f3bc9e104fdd22b4912805ee60ec73165eecaf4c';
+String _$gobandViewModelHash() => r'7a171f0473cf106262684f14df70a90c5ae93d15';
 
 /// See also [GobandViewModel].
 @ProviderFor(GobandViewModel)

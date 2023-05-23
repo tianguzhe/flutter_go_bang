@@ -17,9 +17,10 @@ class GoBand with _$GoBand {
 }
 
 @riverpod
-class GobandViewModel extends _$GobandViewModel {
-  final oneSize = 20;
+double oneSize(OneSizeRef ref) => 20;
 
+@riverpod
+class GobandViewModel extends _$GobandViewModel {
   @override
   List<GoBand> build() => [];
 
@@ -27,6 +28,8 @@ class GobandViewModel extends _$GobandViewModel {
     double calcDx = 0;
     double calcDy = 0;
     String role = state.length % 2 == 0 ? "black" : "white";
+
+    final oneSize = ref.read(oneSizeProvider);
 
     if (offset.dx % oneSize >= oneSize / 2) {
       calcDx = offset.dx - (offset.dx % oneSize) + oneSize;
